@@ -20,74 +20,69 @@ function generatePassword() {
   var password = ""; //Clear any previously set passwords
   var passSelection = []; //Create the array for Character type selections
 
-  var passLength = prompt("Please choose your password length (8-128 chars)");
-  if (passLength < 8 || passLength > 128 || isNaN(passLength) || passLength === null || passLength == ""  ) {
-    // alert("Invalid password length, please choose between 8 and 128 characters. ");
-    return "Invalid password length, please choose between 8 and 128 characters. Try Again";
+  // Prompt for password length - validates that chosen length is valid (8-128 chars)
+  var passLength = prompt("Please choose your password length between 8-128 characters");
+  if (passLength < 8 || passLength > 128 || isNaN(passLength) || passLength === null || passLength == "") {
+    alert("Invalid password length. \n Please choose a password length between 8-128 characters.");
+    return "Invalid password length. \n Please choose a password length between 8-128 characters.";
   }
-  // if (passLength === null || passLength == ""){
-  //   return;
-  // }
+
   // Prompt for lower case
   if (confirm("Do you require Lower Case characters?")) {
     passSelection.push(lowercaseChars);
   }
-  
+
   // Prompt for Upper case
   if (confirm("Do you require Upper Case characteds?")) {
     passSelection.push(uppercaseChars);
   }
-  // Prompt for numeric; 
+
+  // Prompt for Numbers; 
   if (confirm("Do you require Numbers?")) {
     passSelection.push(numbers);
   }
+
   // Prompt for Special Chars
   if (confirm("Do you require Special Chars?")) {
     passSelection.push(specialchars);
-
   }
+
   // Check to ensure at least one option is selected
   if (passSelection == "") {
-    alert("You have not selected any options, please try again");
-    return "Try again";
+    alert("You have not selected any options. \nPlease try again");
+    return "You have must select at least 1 option. \nPlease try again.";
   }
 
-    // Function to create the password, validating that each charType has been met
+  // Function to create the password.
   CreatePassword(passLength, passSelection);
 
-
-
+  // Generates the password and then validates to ensure it meets user requirements. If requirements are unmet, generate new password. 
   function CreatePassword(passLength, passSelection) {
-    // Create an array the same size as the user selected options to record each count of character type that the user wants 
-    // Used to validate that each requested character type has been used at least once,
-    var charType = [passSelection.length].fill(0);
+    var charType = [passSelection.length].fill(0); // Used to validate that each requested character type has been used at least once,
 
-    // For loop will loop through each iteration, randomizing both dimensions of the array to select random character type and character. 
-    // Dimension 1 is character type, dimension 2 is the character at that position within the sub-array. 
+    // Loop through to the password length, and select random characters within the array(s).
+    // Dimension 1 is character type, dimension 2 is a nested array containing the characters for the associated selection. 
     for (let index = 0; index < passLength; index++) {
-      var randDim1 = Math.floor(Math.random() * passSelection.length);
-      var randDim2 = Math.floor(Math.random() * passSelection[randDim1].length);
-      charType[randDim1] = 1;
-      password += passSelection[randDim1][randDim2];
+      var randDim1 = Math.floor(Math.random() * passSelection.length); //randomise array dimension 1
+      var randDim2 = Math.floor(Math.random() * passSelection[randDim1].length); //randomise array dimension 2 (size based on chosen dimension 1)
+      charType[randDim1] = 1; // Set the charType to 1 - to ensure each char-type has been used 
+      password += passSelection[randDim1][randDim2]; 
     }
-    if(charType.length < passSelection.length){
+    // Validate that the charType array is of same size as the user selected criteria array. (required for following for-loop)
+    if (charType.length < passSelection.length) {
       password = "";
       CreatePassword(passLength, passSelection);
     }
-
-    for(i = 0; i<charType.length; i++){
+    // checks that each charType value is 1 to ensure each user selected option hsa been used. If fails, clear the password, restart the function and generate a new password. 
+    for (i = 0; i < charType.length; i++) {
       if (charType[i] == 0) {
         password = "";
-        console.log(charType);
-        console.log("Failed validation");
-        CreatePassword(passLength, passSelection); 
+        CreatePassword(passLength, passSelection);
       }
     }
-   
-    return password;
   }
-  console.log("Passed Validation");
-  return password;
+
+  return password; //return the output password value
 }
 
 // Add event listener to generate button
